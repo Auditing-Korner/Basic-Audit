@@ -375,37 +375,184 @@ class DNSSecurityAuditor(BaseAuditor):
 
     def check_dmarc_records(self) -> None:
         """
-        Check for DMARC (Domain-based Message Authentication, Reporting & Conformance) records.
+        Check for DMARC (Domain-based Message Authentication, Reporting & Conformance) records
+        and perform comprehensive policy analysis.
         """
         try:
-            dmarc_records = self.resolver.resolve(f'_dmarc.{self.target}', 'TXT')
-            found_valid_dmarc = False
-            
-            for record in dmarc_records:
-                if 'v=DMARC1' in str(record):
-                    found_valid_dmarc = True
-                    if 'p=none' in str(record):
-                        self.add_finding(
-                            severity='Medium',
-                            description='Permissive DMARC policy',
-                            details='DMARC policy is set to "none", which only monitors but does not enforce',
-                            recommendation='Consider implementing a stricter DMARC policy (quarantine or reject)',
-                            reference='https://dmarc.org/resources/specification/',
-                            category='Email Security'
-                        )
-                    break
-                    
-            if not found_valid_dmarc:
+            try:
+                dmarc_records = self.resolver.resolve(f'_dmarc.{self.target}', 'TXT')
+                found_valid_dmarc = False
+                
+                for record in dmarc_records:
+                    record_text = str(record)
+                    if 'v=DMARC1' in record_text:
+                        found_valid_dmarc = True
+                        
+                        # Parse DMARC policy tags
+                        tags = {}
+                        for tag in record_text.split(';'):
+                            tag = tag.strip()
+                            if '=' in tag:
+                                key, value = tag.split('=', 1)
+                                tags[key.strip()] = value.strip()
+                        
+                        # Check policy strength
+                        policy = tags.get('p', 'none')
+                        sub_policy = tags.get('sp', policy)  # Inherit from p if not specified
+                        
+                        if policy == 'none':
+                            self.add_finding(
+                                severity='Medium',
+                                description='Permissive DMARC policy',
+                                details='DMARC policy is set to "none", which only monitors but does not enforce',
+                                recommendation='Consider implementing a stricter DMARC policy (quarantine or reject)',
+                                reference='https://dmarc.org/resources/specification/',
+                                category='Email Security'
+                            )
+                        elif policy == 'quarantine' and 'pct' in tags and int(tags['pct']) < 100:
+                            self.add_finding(
+                                severity='Low',
+                                description='Partial DMARC enforcement',
+                                details=f'DMARC policy applies to only {tags["pct"]}% of messages',
+                                recommendation='Consider increasing DMARC policy percentage to 100%',
+                                reference='https://dmarc.org/resources/specification/',
+                                category='Email Security'
+                            )
+                        
+                        # Check subdomain policy
+                        if sub_policy == 'none' and policy != 'none':
+                            self.add_finding(
+                                severity='Medium',
+                                description='Weak subdomain DMARC policy',
+                                details='Subdomain policy is weaker than organizational policy',
+                                recommendation='Align subdomain policy with organizational policy',
+                                reference='https://dmarc.org/resources/specification/',
+                                category='Email Security'
+                            )
+                        
+                        # Check reporting configuration
+                        rua = tags.get('rua', '')
+                        ruf = tags.get('ruf', '')
+                        
+                        if not rua and not ruf:
+                            self.add_finding(
+                                severity='Low',
+                                description='No DMARC reporting configured',
+                                details='DMARC record lacks aggregate (rua) and forensic (ruf) reporting URIs',
+                                recommendation='Configure DMARC reporting to monitor email authentication results',
+                                reference='https://dmarc.org/resources/specification/',
+                                category='Email Security'
+                            )
+                        elif not rua:
+                            self.add_finding(
+                                severity='Low',
+                                description='No aggregate DMARC reporting',
+                                details='DMARC record lacks aggregate (rua) reporting URI',
+                                recommendation='Configure aggregate DMARC reporting for better visibility',
+                                reference='https://dmarc.org/resources/specification/',
+                                category='Email Security'
+                            )
+                        
+                        # Check for recommended tags
+                        if 'adkim' not in tags or 'aspf' not in tags:
+                            self.add_finding(
+                                severity='Low',
+                                description='Incomplete DMARC alignment configuration',
+                                details='DMARC record missing explicit alignment mode settings (adkim/aspf)',
+                                recommendation='Specify DKIM and SPF alignment modes in DMARC record',
+                                reference='https://dmarc.org/resources/specification/',
+                                category='Email Security'
+                            )
+                        
+                        # Check alignment modes
+                        if tags.get('adkim', 'r') == 'r' and tags.get('aspf', 'r') == 'r':
+                            self.add_finding(
+                                severity='Info',
+                                description='Relaxed DMARC alignment',
+                                details='Both DKIM and SPF use relaxed alignment mode',
+                                recommendation='Consider strict alignment mode for stronger security',
+                                reference='https://dmarc.org/resources/specification/',
+                                category='Email Security'
+                            )
+                        
+                        # Check reporting interval
+                        if 'ri' in tags:
+                            interval = int(tags['ri'])
+                            if interval > 86400:  # More than 24 hours
+                                self.add_finding(
+                                    severity='Low',
+                                    description='Extended DMARC reporting interval',
+                                    details=f'Reporting interval of {interval} seconds may delay detection of issues',
+                                    recommendation='Consider reducing reporting interval to 24 hours or less',
+                                    reference='https://dmarc.org/resources/specification/',
+                                    category='Email Security'
+                                )
+                        
+                        # Check for multiple reporting addresses
+                        if rua:
+                            rua_addresses = rua.split(',')
+                            if len(rua_addresses) < 2:
+                                self.add_finding(
+                                    severity='Low',
+                                    description='Single DMARC reporting address',
+                                    details='Only one aggregate reporting address configured',
+                                    recommendation='Consider configuring multiple reporting addresses for redundancy',
+                                    reference='https://dmarc.org/resources/specification/',
+                                    category='Email Security'
+                                )
+                        
+                        # Validate failure reporting options
+                        if 'fo' in tags:
+                            fo_options = tags['fo'].split(':')
+                            if '1' in fo_options or '0' in fo_options:
+                                self.add_finding(
+                                    severity='Info',
+                                    description='Detailed failure reporting enabled',
+                                    details='DMARC is configured to generate detailed failure reports',
+                                    recommendation='Monitor failure reports for potential abuse or misconfiguration',
+                                    reference='https://dmarc.org/resources/specification/',
+                                    category='Email Security'
+                                )
+                        
+                        break  # Process only the first valid DMARC record
+                
+                if not found_valid_dmarc:
+                    self.add_finding(
+                        severity='High',
+                        description='No valid DMARC record found',
+                        details='Domain lacks DMARC protection against email spoofing',
+                        recommendation='Implement DMARC with appropriate policy',
+                        reference='https://dmarc.org/resources/specification/',
+                        category='Email Security'
+                    )
+                
+            except dns.resolver.NXDOMAIN:
                 self.add_finding(
                     severity='High',
-                    description='No valid DMARC record found',
-                    details='Domain lacks DMARC protection against email spoofing',
-                    recommendation='Implement DMARC with appropriate policy',
+                    description='No DMARC record found',
+                    details='No _dmarc DNS record exists for the domain',
+                    recommendation='Implement DMARC by creating a _dmarc TXT record',
                     reference='https://dmarc.org/resources/specification/',
                     category='Email Security'
                 )
-        except Exception:
-            pass
+            except dns.resolver.NoAnswer:
+                self.add_finding(
+                    severity='High',
+                    description='Empty DMARC record',
+                    details='_dmarc DNS record exists but contains no content',
+                    recommendation='Configure proper DMARC record content',
+                    reference='https://dmarc.org/resources/specification/',
+                    category='Email Security'
+                )
+        except Exception as e:
+            self.add_finding(
+                severity='Error',
+                description='DMARC check error',
+                details=f'Error checking DMARC records: {str(e)}',
+                recommendation='Verify DNS configuration and retry DMARC check',
+                reference='https://dmarc.org/resources/specification/',
+                category='Email Security'
+            )
 
     def check_spf_records(self) -> None:
         """
