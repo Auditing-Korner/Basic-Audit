@@ -1,0 +1,23 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://yourusername.github.io/Basic-Audit/sitemap.xml
+
+# Allow all bots to index the documentation
+User-agent: Googlebot
+Allow: /
+User-agent: Bingbot
+Allow: /
+User-agent: DuckDuckBot
+Allow: /
+User-agent: Baiduspider
+Allow: /
+User-agent: YandexBot
+Allow: /
+
+# Prevent indexing of search results
+Disallow: /search/
+Disallow: /search?*
+
+# Rate limiting for aggressive bots
+Crawl-delay: 1 
