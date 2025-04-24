@@ -1,0 +1,114 @@
+site_name: Basic Security Audit Tool
+site_url: https://yourusername.github.io/Basic-Audit/
+site_description: A comprehensive security auditing tool implementing ISO 27002 and NIST guidelines for DNS and SSL/TLS security assessments.
+site_author: Your Organization
+repo_url: https://github.com/yourusername/Basic-Audit
+repo_name: Basic-Audit
+
+theme:
+  name: material
+  features:
+    - navigation.instant
+    - navigation.tracking
+    - navigation.tabs
+    - navigation.sections
+    - navigation.expand
+    - navigation.indexes
+    - toc.integrate
+    - search.suggest
+    - search.highlight
+    - content.tabs.link
+    - content.code.annotation
+    - content.code.copy
+  language: en
+  palette:
+    - scheme: default
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+      primary: indigo
+      accent: indigo
+    - scheme: slate
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+      primary: indigo
+      accent: indigo
+  font:
+    text: Roboto
+    code: Roboto Mono
+  favicon: assets/favicon.png
+  logo: assets/logo.png
+
+plugins:
+  - search
+  - git-revision-date-localized:
+      enable_creation_date: true
+  - git-authors
+  - minify:
+      minify_html: true
+  - awesome-pages
+  - meta-descriptions
+
+markdown_extensions:
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - admonition
+  - pymdownx.arithmatex:
+      generic: true
+  - footnotes
+  - pymdownx.details
+  - pymdownx.superfences
+  - pymdownx.mark
+  - attr_list
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+  - toc:
+      permalink: true
+
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/yourusername/Basic-Audit
+  analytics:
+    provider: google
+    property: !ENV GOOGLE_ANALYTICS_KEY
+  consent:
+    title: Cookie consent
+    description: >- 
+      We use cookies to recognize your repeated visits and preferences, as well
+      as to measure the effectiveness of our documentation and whether users
+      find what they're searching for. With your consent, you're helping us to
+      make our documentation better.
+
+nav:
+  - Home: index.md
+  - Getting Started:
+    - Installation: getting-started/installation.md
+    - Quick Start: getting-started/quickstart.md
+    - Configuration: getting-started/configuration.md
+  - Modules:
+    - Overview: modules/index.md
+    - DNS Security:
+      - Overview: modules/dns-security/index.md
+      - NIST Guidelines: modules/dns-security/nist-guidelines.md
+      - ISO 27002 Controls: modules/dns-security/iso-controls.md
+      - Implementation: modules/dns-security/implementation.md
+    - SSL/TLS Security:
+      - Overview: modules/ssl-security/index.md
+      - NIST Guidelines: modules/ssl-security/nist-guidelines.md
+      - ISO 27002 Controls: modules/ssl-security/iso-controls.md
+      - Implementation: modules/ssl-security/implementation.md
+  - Standards:
+    - ISO 27002:2022: standards/iso27002.md
+    - NIST Guidelines: standards/nist.md
+  - Development:
+    - Contributing: development/contributing.md
+    - Testing: development/testing.md
+    - Documentation: development/documentation.md
+  - About:
+    - License: about/license.md
+    - Release Notes: about/changelog.md 
