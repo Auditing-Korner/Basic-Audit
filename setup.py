@@ -16,7 +16,7 @@ setup(
             "security-audit=audit_tool.main:main",
         ],
     },
-    author="Your Name",
+    author="RFS",
     author_email="your.email@example.com",
     description="A modular security audit tool",
     long_description=open("README.md").read(),

@@ -1,0 +1,58 @@
+{
+    "modules": {
+        "enabled": [
+            "dns_security",
+            "ssl_security",
+            "oauth_security",
+            "smtp_security"
+        ],
+        "dns_security": {
+            "timeout": 10,
+            "nameservers": [],
+            "check_dnssec": true,
+            "check_zone_transfer": true,
+            "check_recursion": true
+        },
+        "ssl_security": {
+            "min_rsa_key_size": 2048,
+            "min_ec_key_size": 256,
+            "check_revocation": true,
+            "check_compression": true,
+            "check_renegotiation": true
+        },
+        "oauth_security": {
+            "timeout": 10,
+            "verify_ssl": true,
+            "check_pkce": true,
+            "check_token_binding": true,
+            "check_dpop": true,
+            "check_par": true,
+            "check_rar": true,
+            "check_jarm": true
+        },
+        "smtp_security": {
+            "timeout": 10,
+            "check_starttls": true,
+            "check_spf": true,
+            "check_dmarc": true,
+            "check_dkim": true
+        }
+    },
+    "reporting": {
+        "output_format": ["json", "html"],
+        "include_info_findings": true,
+        "include_references": true,
+        "group_by_severity": true
+    },
+    "logging": {
+        "level": "INFO",
+        "file": "security_audit.log",
+        "format": "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+    },
+    "general": {
+        "parallel_checks": true,
+        "max_threads": 10,
+        "request_timeout": 30,
+        "user_agent": "Security-Audit-Tool/1.0"
+    }
+} 

@@ -1,0 +1,31 @@
+{% set critical_high = summary.severity_counts.Critical + summary.severity_counts.High %}
+{% set total = summary.total_vulnerabilities %}
+{% set risk_level = "high" if summary.risk_score > 75 else "moderate" if summary.risk_score > 50 else "low" %}
+
+<div class="executive-summary prose max-w-none">
+    <p>
+        The security audit identified {{ total }} findings, including {{ critical_high }} critical/high severity issues 
+        that require immediate attention. The overall risk score is {{ summary.risk_score }}/100, indicating 
+        a {{ risk_level }} level of risk.
+    </p>
+    
+    <h4>Key Findings:</h4>
+    <ul>
+        <li>{{ summary.severity_counts.Critical }} Critical severity issues</li>
+        <li>{{ summary.severity_counts.High }} High severity issues</li>
+        <li>{{ summary.severity_counts.Medium }} Medium severity issues</li>
+    </ul>
+    
+    <h4>Category Breakdown:</h4>
+    <ul>
+        {% for category, data in summary.categories.items() %}
+            <li>{{ category }}: {{ data.count }} findings</li>
+        {% endfor %}
+    </ul>
+    
+    {% if summary.resolved_count > 0 %}
+        <p>
+            {{ summary.resolved_count }} issues have been resolved, with {{ summary.unresolved_count }} remaining to be addressed.
+        </p>
+    {% endif %}
+</div> 

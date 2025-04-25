@@ -1,0 +1,10 @@
+{% set risk_level = "Critical" if risk_score >= 80 else "High" if risk_score >= 60 else "Medium" if risk_score >= 40 else "Low" if risk_score >= 20 else "Info" %}
+{% set color = config.severity_levels[risk_level].color %}
+
+<div class="risk-indicator text-center p-6 bg-white rounded-lg shadow-sm">
+    <h3 class="text-xl font-semibold mb-4">Overall Risk Score</h3>
+    <div class="inline-flex items-center justify-center w-32 h-32 rounded-full border-8" style="border-color: {{ color }}">
+        <div class="text-3xl font-bold" style="color: {{ color }}">{{ risk_score }}</div>
+    </div>
+    <div class="mt-4 text-lg font-medium" style="color: {{ color }}">{{ risk_level }} Risk</div>
+</div> 

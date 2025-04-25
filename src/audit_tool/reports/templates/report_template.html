@@ -3,48 +3,89 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ config.company_info.name }} - Security Audit Report for {{ target }}</title>
+    <title>{{ config.company.name }} - Security Audit Report for {{ target }}</title>
     
-    <!-- Tailwind and Font Awesome -->
+    <!-- External Dependencies -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     
     <!-- Custom Styles -->
     <style>
         :root {
-            --primary-color: #1E40AF;
-            --secondary-color: #1E293B;
-            --accent-color: #3B82F6;
-            --font-family: system-ui, -apple-system, sans-serif;
+            --primary-color: {{ config.branding.primary_color }};
+            --secondary-color: {{ config.branding.secondary_color }};
+            --accent-color: {{ config.branding.accent_color }};
+            --success-color: {{ config.branding.success_color }};
+            --warning-color: {{ config.branding.warning_color }};
+            --danger-color: {{ config.branding.danger_color }};
+            --info-color: {{ config.branding.info_color }};
+            --font-family: {{ config.branding.font_family }};
         }
         
         body {
             font-family: var(--font-family);
+            line-height: 1.6;
         }
         
         .severity-critical {
-            background-color: #DC2626;
+            background-color: var(--danger-color);
         }
         .severity-high {
-            background-color: #D97706;
+            background-color: var(--warning-color);
         }
         .severity-medium {
-            background-color: #F59E0B;
+            background-color: var(--accent-color);
         }
         .severity-low {
-            background-color: #059669;
+            background-color: var(--success-color);
         }
         .severity-info {
-            background-color: #3B82F6;
+            background-color: var(--info-color);
         }
         
         .finding-card {
             transition: all 0.3s ease;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
         
         .finding-card:hover {
             transform: translateY(-2px);
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+        }
+        
+        .summary-card {
+            background: white;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        
+        .metric-card {
+            background: white;
+            border-radius: 8px;
+            padding: 1.5rem;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+        
+        .metric-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+        }
+        
+        .metric-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+        
+        .metric-label {
+            color: var(--secondary-color);
+            font-size: 0.875rem;
+            margin-top: 0.5rem;
         }
         
         @media print {
@@ -57,11 +98,15 @@
             body {
                 font-size: 12pt;
             }
+            .finding-card {
+                break-inside: avoid;
+            }
         }
         
         .chart-container {
             height: 400px;
             width: 100%;
+            margin: 1.5rem 0;
         }
         
         .risk-meter {
@@ -80,55 +125,31 @@
             font-weight: bold;
             color: var(--primary-color);
         }
+        
+        .timeline {
+            position: relative;
+            padding: 1rem 0;
+        }
+        
+        .timeline-item {
+            position: relative;
+            padding: 1rem 0;
+            border-left: 2px solid var(--accent-color);
+            margin-left: 1rem;
+            padding-left: 2rem;
+        }
+        
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -0.5rem;
+            top: 1.5rem;
+            width: 1rem;
+            height: 1rem;
+            background: var(--accent-color);
+            border-radius: 50%;
+        }
     </style>
-    
-    <script>
-        // Apply dynamic styles after page load
-        document.addEventListener('DOMContentLoaded', function() {
-            const root = document.documentElement;
-            {% if config.branding.primary_color %}
-                root.style.setProperty('--primary-color', '{{ config.branding.primary_color }}');
-            {% endif %}
-            {% if config.branding.secondary_color %}
-                root.style.setProperty('--secondary-color', '{{ config.branding.secondary_color }}');
-            {% endif %}
-            {% if config.branding.accent_color %}
-                root.style.setProperty('--accent-color', '{{ config.branding.accent_color }}');
-            {% endif %}
-            {% if config.branding.font_family %}
-                root.style.setProperty('--font-family', '{{ config.branding.font_family }}');
-            {% endif %}
-            
-            // Apply severity colors
-            {% if config.severity_levels %}
-                {% if config.severity_levels.Critical and config.severity_levels.Critical.color %}
-                    document.querySelectorAll('.severity-critical').forEach(el => {
-                        el.style.backgroundColor = '{{ config.severity_levels.Critical.color }}';
-                    });
-                {% endif %}
-                {% if config.severity_levels.High and config.severity_levels.High.color %}
-                    document.querySelectorAll('.severity-high').forEach(el => {
-                        el.style.backgroundColor = '{{ config.severity_levels.High.color }}';
-                    });
-                {% endif %}
-                {% if config.severity_levels.Medium and config.severity_levels.Medium.color %}
-                    document.querySelectorAll('.severity-medium').forEach(el => {
-                        el.style.backgroundColor = '{{ config.severity_levels.Medium.color }}';
-                    });
-                {% endif %}
-                {% if config.severity_levels.Low and config.severity_levels.Low.color %}
-                    document.querySelectorAll('.severity-low').forEach(el => {
-                        el.style.backgroundColor = '{{ config.severity_levels.Low.color }}';
-                    });
-                {% endif %}
-                {% if config.severity_levels.Info and config.severity_levels.Info.color %}
-                    document.querySelectorAll('.severity-info').forEach(el => {
-                        el.style.backgroundColor = '{{ config.severity_levels.Info.color }}';
-                    });
-                {% endif %}
-            {% endif %}
-        });
-    </script>
 </head>
 
 <body class="bg-gray-50">
@@ -136,27 +157,23 @@
     <nav class="bg-white shadow-lg no-print sticky top-0 z-50">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between h-16">
-                <div class="flex">
-                    {% if config.company_info.logo_url %}
-                    <div class="flex-shrink-0 flex items-center">
-                        <img class="h-8 w-auto" src="{{ config.company_info.logo_url }}" alt="{{ config.company_info.name }} logo">
+                <div class="flex items-center">
+                    {% if config.company.logo_url %}
+                    <div class="flex-shrink-0">
+                        <img class="h-8 w-auto" src="{{ config.company.logo_url }}" alt="{{ config.company.name }} logo">
                     </div>
                     {% endif %}
                     <div class="ml-6 flex space-x-8">
-                        <a href="#summary" class="text-gray-900 inline-flex items-center px-1 pt-1 border-b-2 border-transparent hover:border-gray-300">
-                            Summary
-                        </a>
-                        <a href="#findings" class="text-gray-900 inline-flex items-center px-1 pt-1 border-b-2 border-transparent hover:border-gray-300">
-                            Findings
-                        </a>
-                        <a href="#timeline" class="text-gray-900 inline-flex items-center px-1 pt-1 border-b-2 border-transparent hover:border-gray-300">
-                            Timeline
-                        </a>
+                        <a href="#executive-summary" class="text-gray-900 hover:text-blue-600 px-3 py-2">Executive Summary</a>
+                        <a href="#key-metrics" class="text-gray-900 hover:text-blue-600 px-3 py-2">Key Metrics</a>
+                        <a href="#findings" class="text-gray-900 hover:text-blue-600 px-3 py-2">Findings</a>
+                        <a href="#recommendations" class="text-gray-900 hover:text-blue-600 px-3 py-2">Recommendations</a>
+                        <a href="#timeline" class="text-gray-900 hover:text-blue-600 px-3 py-2">Timeline</a>
                     </div>
                 </div>
-                <div class="flex items-center">
+                <div class="flex items-center space-x-4">
                     <button onclick="window.print()" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700">
-                        <i class="fas fa-print mr-2"></i> Print Report
+                        <i class="fas fa-print mr-2"></i> Export PDF
                     </button>
                 </div>
             </div>
@@ -169,11 +186,18 @@
             <div class="md:flex md:items-center md:justify-between">
                 <div class="flex-1 min-w-0">
                     <h1 class="text-3xl font-bold leading-tight text-gray-900">
-                        {{ config.report_settings.title_prefix|default('Security Audit Report') }} for {{ target }}
+                        {{ config.report.title_prefix }}
                     </h1>
-                    <p class="mt-1 text-sm text-gray-500">
-                        Generated on {{ timestamp }}
-                    </p>
+                    <div class="mt-1 flex flex-col sm:flex-row sm:flex-wrap sm:mt-0 sm:space-x-6">
+                        <div class="mt-2 flex items-center text-sm text-gray-500">
+                            <i class="fas fa-building mr-1.5"></i>
+                            Target: {{ target }}
+                        </div>
+                        <div class="mt-2 flex items-center text-sm text-gray-500">
+                            <i class="fas fa-calendar mr-1.5"></i>
+                            Generated: {{ timestamp }}
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -189,48 +213,60 @@
                 </div>
                 <div class="ml-3">
                     <p class="text-sm text-yellow-700">
-                        {{ config.report_settings.confidentiality_notice|default('CONFIDENTIAL: This security audit report contains sensitive information. Handle with care and share only with authorized personnel.') }}
+                        {{ config.report.confidentiality_notice }}
                     </p>
                 </div>
             </div>
         </div>
 
         <!-- Executive Summary -->
-        <section id="summary" class="mb-8">
+        <section id="executive-summary" class="mb-12">
             <div class="bg-white shadow rounded-lg p-6">
                 <h2 class="text-2xl font-bold text-gray-900 mb-4">Executive Summary</h2>
-                <div class="prose max-w-none">
-                    {{ executive_summary|safe }}
-                </div>
+                {{ executive_summary|safe }}
                 
-                <!-- Risk Score -->
-                <div class="mt-6">
-                    <h3 class="text-lg font-medium text-gray-900 mb-4">Overall Risk Score</h3>
-                    <div class="risk-meter">
-                        <div class="risk-score">{{ summary.risk_score }}</div>
+                <!-- Key Metrics Overview -->
+                <div id="key-metrics" class="grid grid-cols-1 md:grid-cols-4 gap-6 mt-8">
+                    <div class="metric-card">
+                        <div class="metric-value">{{ summary.total_vulnerabilities }}</div>
+                        <div class="metric-label">Total Findings</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-value text-red-600">{{ summary.severity_counts.Critical }}</div>
+                        <div class="metric-label">Critical Findings</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-value">{{ summary.risk_score }}/100</div>
+                        <div class="metric-label">Risk Score</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-value text-green-600">{{ summary.resolved_count }}</div>
+                        <div class="metric-label">Resolved Issues</div>
                     </div>
                 </div>
                 
-                <!-- Charts -->
-                <div class="grid md:grid-cols-2 gap-6 mt-6">
+                <!-- Risk Distribution -->
+                <div class="grid md:grid-cols-2 gap-6 mt-8">
                     <div class="chart-container">
+                        <h3 class="text-lg font-medium text-gray-900 mb-4">Severity Distribution</h3>
                         {{ severity_chart|safe }}
                     </div>
                     <div class="chart-container">
-                        {{ timeline_chart|safe }}
+                        <h3 class="text-lg font-medium text-gray-900 mb-4">Finding Categories</h3>
+                        {{ category_chart|safe }}
                     </div>
                 </div>
             </div>
         </section>
 
         <!-- Findings -->
-        <section id="findings" class="mb-8">
+        <section id="findings" class="mb-12">
             <div class="bg-white shadow rounded-lg p-6">
-                <h2 class="text-2xl font-bold text-gray-900 mb-4">Detailed Findings</h2>
+                <h2 class="text-2xl font-bold text-gray-900 mb-4">Security Findings</h2>
                 
                 <!-- Severity Legend -->
                 <div class="flex flex-wrap gap-4 mb-6">
-                    {% for severity, info in summary.severity_descriptions.items() %}
+                    {% for severity, info in config.severity_levels.items() %}
                     <div class="flex items-center">
                         <span class="w-4 h-4 rounded-full mr-2" style="background-color: {{ info.color }}"></span>
                         <span class="text-sm text-gray-600">{{ severity }} ({{ info.description }})</span>
@@ -244,24 +280,21 @@
                     <h3 class="text-xl font-semibold text-gray-900 mb-4">{{ category }}</h3>
                     <div class="grid gap-6 md:grid-cols-2">
                         {% for finding in category_findings %}
-                        <div class="finding-card bg-white rounded-lg border p-6 hover:border-blue-500">
+                        <div class="finding-card bg-white rounded-lg border p-6">
                             <div class="flex items-center justify-between mb-4">
-                                <span class="px-3 py-1 rounded-full text-white text-sm font-medium severity-{{ finding.severity|lower }}">
+                                <span class="px-3 py-1 rounded-full text-white text-sm font-medium" style="background-color: {{ config.severity_levels[finding.severity].color }}">
                                     {{ finding.severity }}
                                 </span>
-                                <span class="text-sm text-gray-500">ID: {{ finding.id }}</span>
                             </div>
-                            <h4 class="text-lg font-medium text-gray-900 mb-2">{{ finding.title }}</h4>
-                            <p class="text-gray-600 mb-4">{{ finding.description }}</p>
+                            <h4 class="text-lg font-medium text-gray-900 mb-2">{{ finding.description }}</h4>
+                            <p class="text-gray-600 mb-4">{{ finding.details }}</p>
                             
-                            {% if finding.cve_references %}
+                            {% if finding.reference %}
                             <div class="mb-4">
-                                <h5 class="text-sm font-medium text-gray-900 mb-2">CVE References:</h5>
-                                <ul class="list-disc list-inside text-sm text-blue-600">
-                                    {% for cve in finding.cve_references %}
-                                    <li><a href="https://nvd.nist.gov/vuln/detail/{{ cve }}" target="_blank" rel="noopener">{{ cve }}</a></li>
-                                    {% endfor %}
-                                </ul>
+                                <h5 class="text-sm font-medium text-gray-900 mb-2">Reference:</h5>
+                                <p class="text-sm text-blue-600">
+                                    <a href="{{ finding.reference }}" target="_blank" rel="noopener">{{ finding.reference }}</a>
+                                </p>
                             </div>
                             {% endif %}
                             
@@ -279,13 +312,11 @@
             </div>
         </section>
 
-        <!-- Timeline -->
-        <section id="timeline" class="mb-8">
+        <!-- Risk Score -->
+        <section id="risk-score" class="mb-12">
             <div class="bg-white shadow rounded-lg p-6">
-                <h2 class="text-2xl font-bold text-gray-900 mb-4">Findings Timeline</h2>
-                <div class="chart-container">
-                    {{ timeline_chart|safe }}
-                </div>
+                <h2 class="text-2xl font-bold text-gray-900 mb-4">Overall Risk Assessment</h2>
+                {{ risk_gauge|safe }}
             </div>
         </section>
     </main>
@@ -296,13 +327,13 @@
             <div class="md:flex md:items-center md:justify-between">
                 <div class="flex-1 min-w-0">
                     <p class="text-sm text-gray-500">
-                        {{ config.report_settings.footer|default('Generated by Security Audit Tool') }}
+                        {{ config.report.report_footer }}
                     </p>
                 </div>
-                {% if config.company_info.website %}
+                {% if config.company.website %}
                 <div class="mt-4 md:mt-0">
-                    <a href="{{ config.company_info.website }}" target="_blank" rel="noopener" class="text-sm text-blue-600 hover:text-blue-500">
-                        Visit {{ config.company_info.name }}
+                    <a href="{{ config.company.website }}" target="_blank" rel="noopener" class="text-sm text-blue-600 hover:text-blue-500">
+                        Visit {{ config.company.name }}
                     </a>
                 </div>
                 {% endif %}

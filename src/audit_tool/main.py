@@ -31,9 +31,38 @@ def save_report(report: str, output_file: str) -> None:
     with open(output_file, 'w') as f:
         f.write(report)
 
+def list_available_modules(module_loader: ModuleLoader) -> None:
+    """Display available security audit modules with descriptions."""
+    print("\nAvailable Security Audit Modules:")
+    print("-" * 80)
+    
+    modules = module_loader.get_available_modules()
+    categories = {}
+    
+    # Group modules by category
+    for module_name, module_class in modules.items():
+        category = module_name.split('.')[2] if len(module_name.split('.')) > 2 else 'Other'
+        if category not in categories:
+            categories[category] = []
+        categories[category].append((module_name, module_class))
+    
+    # Print modules by category
+    for category in sorted(categories.keys()):
+        print(f"\n{category.replace('_', ' ').title()} Modules:")
+        print("-" * 40)
+        for module_name, module_class in sorted(categories[category]):
+            description = module_class.__doc__.strip().split('\n')[0] if module_class.__doc__ else "No description available"
+            print(f"  • {module_name.split('.')[-1]}:")
+            print(f"    {description}")
+    
+    print("\nTo use specific modules, use the -m/--modules argument followed by module names.")
+    print("Example: --modules dns_security oauth_security")
+
 def main():
     parser = argparse.ArgumentParser(description='Security Audit Tool')
-    parser.add_argument('target', help='Target to audit (domain, URL, etc.)')
+    parser.add_argument('--list-modules', '-l', action='store_true',
+                       help='List available security audit modules')
+    parser.add_argument('target', nargs='?', help='Target to audit (domain, URL, etc.)')
     parser.add_argument('--config', '-c', help='Path to configuration file')
     parser.add_argument('--output', '-o', help='Output file for the report')
     parser.add_argument('--format', '-f', choices=['json', 'html'], 
@@ -54,6 +83,15 @@ def main():
         module_loader = ModuleLoader(config_manager)
         module_loader.discover_modules('audit_tool.modules')
         
+        # If --list-modules is specified, show available modules and exit
+        if args.list_modules:
+            list_available_modules(module_loader)
+            sys.exit(0)
+            
+        # Ensure target is provided for audit
+        if not args.target:
+            parser.error("target is required unless --list-modules is specified")
+            
         # Override enabled modules if specified
         if args.modules:
             config_manager.set('modules.enabled', args.modules)
