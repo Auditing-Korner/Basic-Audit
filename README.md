@@ -29,6 +29,15 @@ A comprehensive security auditing tool implementing ISO 27002:2022 and NIST guid
   - Perfect Forward Secrecy checks
   - HSTS implementation testing
 
+- **Advanced Reporting**
+  - Interactive HTML reports with charts and visualizations
+  - Customizable branding and styling
+  - Risk score calculation and severity metrics
+  - Timeline visualization of findings
+  - Executive summary generation
+  - Print-friendly format
+  - JSON export for data analysis
+
 ## 📋 Requirements
 
 - Python 3.11 or higher
@@ -36,6 +45,9 @@ A comprehensive security auditing tool implementing ISO 27002:2022 and NIST guid
 - cryptography
 - requests
 - colorama
+- plotly
+- jinja2
+- pyyaml
 
 ## 🔧 Installation
 
@@ -59,6 +71,7 @@ pip install -r requirements.txt
 ```python
 from audit_tool.modules.dns_security import DNSSecurityAuditor
 from audit_tool.modules.ssl_security import SSLAuditor
+from audit_tool.reports.html_generator import HTMLReportGenerator
 
 # DNS Security Assessment
 dns_auditor = DNSSecurityAuditor("example.com")
@@ -67,6 +80,11 @@ dns_findings = dns_auditor.run_all_checks()
 # SSL/TLS Security Assessment
 ssl_auditor = SSLAuditor("example.com")
 ssl_findings = ssl_auditor.audit()
+
+# Generate HTML Report
+generator = HTMLReportGenerator()
+report_path = generator.generate_report(ssl_findings, "example.com")
+print(f"Report generated at: {report_path}")
 ```
 
 ## 📖 Documentation
@@ -77,6 +95,35 @@ Comprehensive documentation is available at [https://yourusername.github.io/Basi
 - [Quick Start Tutorial](https://yourusername.github.io/Basic-Audit/getting-started/quickstart/)
 - [API Reference](https://yourusername.github.io/Basic-Audit/development/api-reference/)
 - [Contributing Guidelines](https://yourusername.github.io/Basic-Audit/development/contributing/)
+
+## 🎨 Report Customization
+
+The tool supports extensive report customization through a YAML configuration file:
+
+```yaml
+# Company Information
+company:
+  name: "Your Company Name"
+  logo_url: "https://your-company.com/logo.png"
+  website: "https://your-company.com"
+  contact_email: "security@your-company.com"
+
+# Report Branding
+branding:
+  primary_color: "#1E40AF"
+  secondary_color: "#3B82F6"
+  accent_color: "#F59E0B"
+  font_family: "Inter, system-ui, sans-serif"
+
+# Severity Levels
+severity_levels:
+  Critical:
+    color: "#DC2626"
+    description: "Immediate action required"
+  High:
+    color: "#D97706"
+    description: "Urgent action needed"
+```
 
 ## 🔍 Example Output
 
@@ -141,7 +188,7 @@ For security issues, please see our [Security Policy](SECURITY.md) and report an
 - ISO 27002:2022 Guidelines
 - Open Source Security Community
 
-## 🔄 Committing to Main
+## 🔄 Development Guidelines
 
 For maintainers with direct access to the main branch:
 

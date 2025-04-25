@@ -1,0 +1,228 @@
+
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <title>Security Audit Report</title>
+            <style>
+                body { font-family: Arial, sans-serif; margin: 20px; }
+                .summary { background-color: #f5f5f5; padding: 15px; border-radius: 5px; }
+                .finding { margin: 10px 0; padding: 10px; border-left: 4px solid #ccc; }
+                .Critical { border-left-color: #ff0000; }
+                .High { border-left-color: #ff6600; }
+                .Medium { border-left-color: #ffcc00; }
+                .Low { border-left-color: #00cc00; }
+                .Info { border-left-color: #0066cc; }
+            </style>
+        </head>
+        <body>
+            <h1>Security Audit Report</h1>
+            <p>Target: popdocs.net</p>
+            <p>Generated: 2025-04-25T02:13:38.499952</p>
+            
+            <div class="summary">
+                <h2>Summary</h2>
+                <p>Total Vulnerabilities: 24</p>
+                <p>Critical: 0</p>
+                <p>High: 8</p>
+                <p>Medium: 2</p>
+                <p>Low: 8</p>
+                <p>Info: 6</p>
+            </div>
+            
+            <h2>Findings</h2>
+        
+            <div class="finding Info">
+                <h3>Nameservers discovered</h3>
+                <p><strong>Severity:</strong> Info</p>
+                <p><strong>Details:</strong> Found 2 nameservers: lucy.ns.cloudflare.com., mitch.ns.cloudflare.com.</p>
+                <p><strong>Recommendation:</strong> Ensure multiple nameservers are properly configured for redundancy</p>
+                <p><strong>Reference:</strong> <a href="https://nvlpubs.nist.gov/nistpubs/SpecialPublications/NIST.SP.800-81-2.pdf">https://nvlpubs.nist.gov/nistpubs/SpecialPublications/NIST.SP.800-81-2.pdf</a></p>
+            </div>
+            
+            <div class="finding Medium">
+                <h3>DNS servers in same network</h3>
+                <p><strong>Severity:</strong> Medium</p>
+                <p><strong>Details:</strong> Multiple nameservers found but they appear to be in the same network</p>
+                <p><strong>Recommendation:</strong> Deploy nameservers in different networks for better redundancy</p>
+                <p><strong>Reference:</strong> <a href="ISO 27002:2022 - Control 8.4">ISO 27002:2022 - Control 8.4</a></p>
+            </div>
+            
+            <div class="finding High">
+                <h3>Recursive queries allowed on lucy.ns.cloudflare.com.</h3>
+                <p><strong>Severity:</strong> High</p>
+                <p><strong>Details:</strong> Nameserver allows recursive queries which could be used for DNS amplification attacks</p>
+                <p><strong>Recommendation:</strong> Disable recursion on authoritative nameservers</p>
+                <p><strong>Reference:</strong> <a href="NIST SP 800-81-2 Section 3.3">NIST SP 800-81-2 Section 3.3</a></p>
+            </div>
+            
+            <div class="finding High">
+                <h3>Recursive queries allowed on mitch.ns.cloudflare.com.</h3>
+                <p><strong>Severity:</strong> High</p>
+                <p><strong>Details:</strong> Nameserver allows recursive queries which could be used for DNS amplification attacks</p>
+                <p><strong>Recommendation:</strong> Disable recursion on authoritative nameservers</p>
+                <p><strong>Reference:</strong> <a href="NIST SP 800-81-2 Section 3.3">NIST SP 800-81-2 Section 3.3</a></p>
+            </div>
+            
+            <div class="finding Info">
+                <h3>DNSSEC properly configured</h3>
+                <p><strong>Severity:</strong> Info</p>
+                <p><strong>Details:</strong> Both DNSKEY and DS records are present</p>
+                <p><strong>Recommendation:</strong> Regularly rotate DNSSEC keys and monitor signature expiration</p>
+                <p><strong>Reference:</strong> <a href="NIST SP 800-53 Rev. 5 SC-20">NIST SP 800-53 Rev. 5 SC-20</a></p>
+            </div>
+            
+            <div class="finding High">
+                <h3>No TCP support on lucy.ns.cloudflare.com.</h3>
+                <p><strong>Severity:</strong> High</p>
+                <p><strong>Details:</strong> DNS server does not support TCP transport</p>
+                <p><strong>Recommendation:</strong> Enable TCP support for DNS queries</p>
+                <p><strong>Reference:</strong> <a href="NIST SP 800-81-2">NIST SP 800-81-2</a></p>
+            </div>
+            
+            <div class="finding High">
+                <h3>No TCP support on mitch.ns.cloudflare.com.</h3>
+                <p><strong>Severity:</strong> High</p>
+                <p><strong>Details:</strong> DNS server does not support TCP transport</p>
+                <p><strong>Recommendation:</strong> Enable TCP support for DNS queries</p>
+                <p><strong>Reference:</strong> <a href="NIST SP 800-81-2">NIST SP 800-81-2</a></p>
+            </div>
+            
+            <div class="finding Medium">
+                <h3>No CAA records found</h3>
+                <p><strong>Severity:</strong> Medium</p>
+                <p><strong>Details:</strong> Domain does not have CAA records to restrict certificate issuance</p>
+                <p><strong>Recommendation:</strong> Implement CAA records to specify authorized certificate authorities</p>
+                <p><strong>Reference:</strong> <a href="RFC 8659 - DNS Certification Authority Authorization">RFC 8659 - DNS Certification Authority Authorization</a></p>
+            </div>
+            
+            <div class="finding High">
+                <h3>Dangling MX record detected</h3>
+                <p><strong>Severity:</strong> High</p>
+                <p><strong>Details:</strong> The MX record points to 22 route3.mx.cloudflare.net which does not resolve</p>
+                <p><strong>Recommendation:</strong> Remove or update dangling DNS records to prevent subdomain takeover</p>
+                <p><strong>Reference:</strong> <a href="OWASP Top 10 2021: A05 Security Misconfiguration">OWASP Top 10 2021: A05 Security Misconfiguration</a></p>
+            </div>
+            
+            <div class="finding High">
+                <h3>Dangling MX record detected</h3>
+                <p><strong>Severity:</strong> High</p>
+                <p><strong>Details:</strong> The MX record points to 94 route2.mx.cloudflare.net which does not resolve</p>
+                <p><strong>Recommendation:</strong> Remove or update dangling DNS records to prevent subdomain takeover</p>
+                <p><strong>Reference:</strong> <a href="OWASP Top 10 2021: A05 Security Misconfiguration">OWASP Top 10 2021: A05 Security Misconfiguration</a></p>
+            </div>
+            
+            <div class="finding High">
+                <h3>Dangling MX record detected</h3>
+                <p><strong>Severity:</strong> High</p>
+                <p><strong>Details:</strong> The MX record points to 60 route1.mx.cloudflare.net which does not resolve</p>
+                <p><strong>Recommendation:</strong> Remove or update dangling DNS records to prevent subdomain takeover</p>
+                <p><strong>Reference:</strong> <a href="OWASP Top 10 2021: A05 Security Misconfiguration">OWASP Top 10 2021: A05 Security Misconfiguration</a></p>
+            </div>
+            
+            <div class="finding Low">
+                <h3>No DNS over TLS support</h3>
+                <p><strong>Severity:</strong> Low</p>
+                <p><strong>Details:</strong> Nameserver lucy.ns.cloudflare.com. does not support encrypted DNS queries</p>
+                <p><strong>Recommendation:</strong> Consider implementing DNS over TLS for enhanced privacy</p>
+                <p><strong>Reference:</strong> <a href="RFC 7858 - DNS over TLS">RFC 7858 - DNS over TLS</a></p>
+            </div>
+            
+            <div class="finding Low">
+                <h3>No DNS over TLS support</h3>
+                <p><strong>Severity:</strong> Low</p>
+                <p><strong>Details:</strong> Nameserver mitch.ns.cloudflare.com. does not support encrypted DNS queries</p>
+                <p><strong>Recommendation:</strong> Consider implementing DNS over TLS for enhanced privacy</p>
+                <p><strong>Reference:</strong> <a href="RFC 7858 - DNS over TLS">RFC 7858 - DNS over TLS</a></p>
+            </div>
+            
+            <div class="finding Info">
+                <h3>No DANE TLSA record for _443._tcp</h3>
+                <p><strong>Severity:</strong> Info</p>
+                <p><strong>Details:</strong> Service _443._tcp does not use DANE for TLS authentication</p>
+                <p><strong>Recommendation:</strong> Consider implementing DANE TLSA records for enhanced TLS security</p>
+                <p><strong>Reference:</strong> <a href="RFC 6698 - DANE Protocol">RFC 6698 - DANE Protocol</a></p>
+            </div>
+            
+            <div class="finding Info">
+                <h3>No DANE TLSA record for _25._tcp</h3>
+                <p><strong>Severity:</strong> Info</p>
+                <p><strong>Details:</strong> Service _25._tcp does not use DANE for TLS authentication</p>
+                <p><strong>Recommendation:</strong> Consider implementing DANE TLSA records for enhanced TLS security</p>
+                <p><strong>Reference:</strong> <a href="RFC 6698 - DANE Protocol">RFC 6698 - DANE Protocol</a></p>
+            </div>
+            
+            <div class="finding Info">
+                <h3>No DANE TLSA record for _587._tcp</h3>
+                <p><strong>Severity:</strong> Info</p>
+                <p><strong>Details:</strong> Service _587._tcp does not use DANE for TLS authentication</p>
+                <p><strong>Recommendation:</strong> Consider implementing DANE TLSA records for enhanced TLS security</p>
+                <p><strong>Reference:</strong> <a href="RFC 6698 - DANE Protocol">RFC 6698 - DANE Protocol</a></p>
+            </div>
+            
+            <div class="finding Info">
+                <h3>No DANE TLSA record for _465._tcp</h3>
+                <p><strong>Severity:</strong> Info</p>
+                <p><strong>Details:</strong> Service _465._tcp does not use DANE for TLS authentication</p>
+                <p><strong>Recommendation:</strong> Consider implementing DANE TLSA records for enhanced TLS security</p>
+                <p><strong>Reference:</strong> <a href="RFC 6698 - DANE Protocol">RFC 6698 - DANE Protocol</a></p>
+            </div>
+            
+            <div class="finding High">
+                <h3>Potential DGA pattern detected</h3>
+                <p><strong>Severity:</strong> High</p>
+                <p><strong>Details:</strong> Multiple subdomains show characteristics of domain generation algorithms</p>
+                <p><strong>Recommendation:</strong> Investigate and monitor suspicious domain patterns</p>
+                <p><strong>Reference:</strong> <a href="NIST SP 800-177 Rev. 1">NIST SP 800-177 Rev. 1</a></p>
+            </div>
+            
+            <div class="finding Low">
+                <h3>Inconsistent TTL values</h3>
+                <p><strong>Severity:</strong> Low</p>
+                <p><strong>Details:</strong> Different record types have varying TTL values</p>
+                <p><strong>Recommendation:</strong> Consider standardizing TTL values across record types</p>
+                <p><strong>Reference:</strong> <a href="NIST SP 800-81-2">NIST SP 800-81-2</a></p>
+            </div>
+            
+            <div class="finding Low">
+                <h3>Very low TTL for MX records</h3>
+                <p><strong>Severity:</strong> Low</p>
+                <p><strong>Details:</strong> TTL of 285 seconds might cause excessive queries</p>
+                <p><strong>Recommendation:</strong> Consider increasing TTL unless required for rapid updates</p>
+                <p><strong>Reference:</strong> <a href="NIST SP 800-81-2">NIST SP 800-81-2</a></p>
+            </div>
+            
+            <div class="finding Low">
+                <h3>Missing reverse DNS</h3>
+                <p><strong>Severity:</strong> Low</p>
+                <p><strong>Details:</strong> No PTR record found for IP 188.114.96.5</p>
+                <p><strong>Recommendation:</strong> Configure reverse DNS records for all IPs</p>
+                <p><strong>Reference:</strong> <a href="RFC 1912">RFC 1912</a></p>
+            </div>
+            
+            <div class="finding Low">
+                <h3>Missing reverse DNS</h3>
+                <p><strong>Severity:</strong> Low</p>
+                <p><strong>Details:</strong> No PTR record found for IP 188.114.97.5</p>
+                <p><strong>Recommendation:</strong> Configure reverse DNS records for all IPs</p>
+                <p><strong>Reference:</strong> <a href="RFC 1912">RFC 1912</a></p>
+            </div>
+            
+            <div class="finding Low">
+                <h3>Missing reverse DNS</h3>
+                <p><strong>Severity:</strong> Low</p>
+                <p><strong>Details:</strong> No PTR record found for IP 2a06:98c1:3121::5</p>
+                <p><strong>Recommendation:</strong> Configure reverse DNS records for all IPs</p>
+                <p><strong>Reference:</strong> <a href="RFC 1912">RFC 1912</a></p>
+            </div>
+            
+            <div class="finding Low">
+                <h3>Missing reverse DNS</h3>
+                <p><strong>Severity:</strong> Low</p>
+                <p><strong>Details:</strong> No PTR record found for IP 2a06:98c1:3120::5</p>
+                <p><strong>Recommendation:</strong> Configure reverse DNS records for all IPs</p>
+                <p><strong>Reference:</strong> <a href="RFC 1912">RFC 1912</a></p>
+            </div>
+            
+        </body>
+        </html>
+        

@@ -1,0 +1,54 @@
+# Company Information
+company:
+  name: "Your Company Name"
+  logo_url: "https://your-company.com/logo.png"  # URL to company logo
+  website: "https://your-company.com"
+  contact_email: "security@your-company.com"
+
+# Report Branding
+branding:
+  primary_color: "#1E40AF"  # Deep blue
+  secondary_color: "#3B82F6"  # Light blue
+  accent_color: "#F59E0B"  # Amber
+  font_family: "Inter, system-ui, sans-serif"
+  
+# Report Settings
+report:
+  title_prefix: "SSL/TLS Security Audit Report"
+  company_description: >
+    Your Company provides comprehensive security auditing services 
+    to help organizations identify and remediate potential vulnerabilities 
+    in their SSL/TLS implementations.
+  confidentiality_notice: >
+    This report contains confidential information about the security posture 
+    of the analyzed systems. Distribution of this report should be limited 
+    to authorized personnel only.
+  report_footer: >
+    This report was generated using Basic-Audit SSL/TLS Security Scanner.
+    For questions or support, please contact our security team.
+
+# Severity Definitions
+severity_levels:
+  Critical:
+    color: "#DC2626"
+    description: "Immediate action required. High risk of system compromise."
+  High:
+    color: "#D97706"
+    description: "Urgent action needed. Significant security risk."
+  Medium:
+    color: "#F59E0B"
+    description: "Action required. Moderate security risk."
+  Low:
+    color: "#059669"
+    description: "Action recommended. Low security risk."
+  Info:
+    color: "#3B82F6"
+    description: "Informational finding. No immediate risk."
+
+# Report Sections
+sections:
+  executive_summary: true
+  methodology: true
+  detailed_findings: true
+  remediation_summary: true
+  appendix: true 

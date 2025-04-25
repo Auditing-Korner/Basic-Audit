@@ -1,8 +1,8 @@
 # Reports
-reports/
-*.json
-*.html
-security_audit.log
+reports/*.html
+reports/*.json
+reports/*.pdf
+!reports/.gitkeep
 
 # Python
 __pycache__/
@@ -27,8 +27,10 @@ wheels/
 *.egg
 
 # Virtual Environment
+.env
+.venv
+env/
 venv/
-.venv/
 ENV/
 
 # IDE
@@ -36,6 +38,9 @@ ENV/
 .vscode/
 *.swp
 *.swo
+
+# Logs
+*.log
 
 # OS
 .DS_Store

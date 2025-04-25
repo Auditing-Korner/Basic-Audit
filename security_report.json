@@ -1,0 +1,206 @@
+{
+  "target": "popdocs.net",
+  "timestamp": "2025-04-25T02:06:21.444801",
+  "summary": {
+    "total_vulnerabilities": 24,
+    "Critical": 0,
+    "High": 8,
+    "Medium": 2,
+    "Low": 8,
+    "Info": 6
+  },
+  "findings": [
+    {
+      "severity": "Info",
+      "description": "Nameservers discovered",
+      "details": "Found 2 nameservers: lucy.ns.cloudflare.com., mitch.ns.cloudflare.com.",
+      "recommendation": "Ensure multiple nameservers are properly configured for redundancy",
+      "reference": "https://nvlpubs.nist.gov/nistpubs/SpecialPublications/NIST.SP.800-81-2.pdf",
+      "category": "DNS Infrastructure"
+    },
+    {
+      "severity": "Medium",
+      "description": "DNS servers in same network",
+      "details": "Multiple nameservers found but they appear to be in the same network",
+      "recommendation": "Deploy nameservers in different networks for better redundancy",
+      "reference": "ISO 27002:2022 - Control 8.4",
+      "category": "DNS Infrastructure"
+    },
+    {
+      "severity": "High",
+      "description": "Recursive queries allowed on lucy.ns.cloudflare.com.",
+      "details": "Nameserver allows recursive queries which could be used for DNS amplification attacks",
+      "recommendation": "Disable recursion on authoritative nameservers",
+      "reference": "NIST SP 800-81-2 Section 3.3",
+      "category": "DNS Configuration"
+    },
+    {
+      "severity": "High",
+      "description": "Recursive queries allowed on mitch.ns.cloudflare.com.",
+      "details": "Nameserver allows recursive queries which could be used for DNS amplification attacks",
+      "recommendation": "Disable recursion on authoritative nameservers",
+      "reference": "NIST SP 800-81-2 Section 3.3",
+      "category": "DNS Configuration"
+    },
+    {
+      "severity": "Info",
+      "description": "DNSSEC properly configured",
+      "details": "Both DNSKEY and DS records are present",
+      "recommendation": "Regularly rotate DNSSEC keys and monitor signature expiration",
+      "reference": "NIST SP 800-53 Rev. 5 SC-20",
+      "category": "DNSSEC"
+    },
+    {
+      "severity": "High",
+      "description": "No TCP support on lucy.ns.cloudflare.com.",
+      "details": "DNS server does not support TCP transport",
+      "recommendation": "Enable TCP support for DNS queries",
+      "reference": "NIST SP 800-81-2",
+      "category": "DNS Configuration"
+    },
+    {
+      "severity": "High",
+      "description": "No TCP support on mitch.ns.cloudflare.com.",
+      "details": "DNS server does not support TCP transport",
+      "recommendation": "Enable TCP support for DNS queries",
+      "reference": "NIST SP 800-81-2",
+      "category": "DNS Configuration"
+    },
+    {
+      "severity": "Medium",
+      "description": "No CAA records found",
+      "details": "Domain does not have CAA records to restrict certificate issuance",
+      "recommendation": "Implement CAA records to specify authorized certificate authorities",
+      "reference": "RFC 8659 - DNS Certification Authority Authorization",
+      "category": "Certificate Security"
+    },
+    {
+      "severity": "High",
+      "description": "Dangling MX record detected",
+      "details": "The MX record points to 94 route2.mx.cloudflare.net which does not resolve",
+      "recommendation": "Remove or update dangling DNS records to prevent subdomain takeover",
+      "reference": "OWASP Top 10 2021: A05 Security Misconfiguration",
+      "category": "DNS Configuration"
+    },
+    {
+      "severity": "High",
+      "description": "Dangling MX record detected",
+      "details": "The MX record points to 60 route1.mx.cloudflare.net which does not resolve",
+      "recommendation": "Remove or update dangling DNS records to prevent subdomain takeover",
+      "reference": "OWASP Top 10 2021: A05 Security Misconfiguration",
+      "category": "DNS Configuration"
+    },
+    {
+      "severity": "High",
+      "description": "Dangling MX record detected",
+      "details": "The MX record points to 22 route3.mx.cloudflare.net which does not resolve",
+      "recommendation": "Remove or update dangling DNS records to prevent subdomain takeover",
+      "reference": "OWASP Top 10 2021: A05 Security Misconfiguration",
+      "category": "DNS Configuration"
+    },
+    {
+      "severity": "Low",
+      "description": "No DNS over TLS support",
+      "details": "Nameserver lucy.ns.cloudflare.com. does not support encrypted DNS queries",
+      "recommendation": "Consider implementing DNS over TLS for enhanced privacy",
+      "reference": "RFC 7858 - DNS over TLS",
+      "category": "Privacy"
+    },
+    {
+      "severity": "Low",
+      "description": "No DNS over TLS support",
+      "details": "Nameserver mitch.ns.cloudflare.com. does not support encrypted DNS queries",
+      "recommendation": "Consider implementing DNS over TLS for enhanced privacy",
+      "reference": "RFC 7858 - DNS over TLS",
+      "category": "Privacy"
+    },
+    {
+      "severity": "Info",
+      "description": "No DANE TLSA record for _443._tcp",
+      "details": "Service _443._tcp does not use DANE for TLS authentication",
+      "recommendation": "Consider implementing DANE TLSA records for enhanced TLS security",
+      "reference": "RFC 6698 - DANE Protocol",
+      "category": "TLS Security"
+    },
+    {
+      "severity": "Info",
+      "description": "No DANE TLSA record for _25._tcp",
+      "details": "Service _25._tcp does not use DANE for TLS authentication",
+      "recommendation": "Consider implementing DANE TLSA records for enhanced TLS security",
+      "reference": "RFC 6698 - DANE Protocol",
+      "category": "TLS Security"
+    },
+    {
+      "severity": "Info",
+      "description": "No DANE TLSA record for _587._tcp",
+      "details": "Service _587._tcp does not use DANE for TLS authentication",
+      "recommendation": "Consider implementing DANE TLSA records for enhanced TLS security",
+      "reference": "RFC 6698 - DANE Protocol",
+      "category": "TLS Security"
+    },
+    {
+      "severity": "Info",
+      "description": "No DANE TLSA record for _465._tcp",
+      "details": "Service _465._tcp does not use DANE for TLS authentication",
+      "recommendation": "Consider implementing DANE TLSA records for enhanced TLS security",
+      "reference": "RFC 6698 - DANE Protocol",
+      "category": "TLS Security"
+    },
+    {
+      "severity": "High",
+      "description": "Potential DGA pattern detected",
+      "details": "Multiple subdomains show characteristics of domain generation algorithms",
+      "recommendation": "Investigate and monitor suspicious domain patterns",
+      "reference": "NIST SP 800-177 Rev. 1",
+      "category": "Domain Security"
+    },
+    {
+      "severity": "Low",
+      "description": "Inconsistent TTL values",
+      "details": "Different record types have varying TTL values",
+      "recommendation": "Consider standardizing TTL values across record types",
+      "reference": "NIST SP 800-81-2",
+      "category": "DNS Configuration"
+    },
+    {
+      "severity": "Low",
+      "description": "Very low TTL for MX records",
+      "details": "TTL of 284 seconds might cause excessive queries",
+      "recommendation": "Consider increasing TTL unless required for rapid updates",
+      "reference": "NIST SP 800-81-2",
+      "category": "DNS Configuration"
+    },
+    {
+      "severity": "Low",
+      "description": "Missing reverse DNS",
+      "details": "No PTR record found for IP 2a06:98c1:3120::5",
+      "recommendation": "Configure reverse DNS records for all IPs",
+      "reference": "RFC 1912",
+      "category": "DNS Configuration"
+    },
+    {
+      "severity": "Low",
+      "description": "Missing reverse DNS",
+      "details": "No PTR record found for IP 188.114.96.5",
+      "recommendation": "Configure reverse DNS records for all IPs",
+      "reference": "RFC 1912",
+      "category": "DNS Configuration"
+    },
+    {
+      "severity": "Low",
+      "description": "Missing reverse DNS",
+      "details": "No PTR record found for IP 2a06:98c1:3121::5",
+      "recommendation": "Configure reverse DNS records for all IPs",
+      "reference": "RFC 1912",
+      "category": "DNS Configuration"
+    },
+    {
+      "severity": "Low",
+      "description": "Missing reverse DNS",
+      "details": "No PTR record found for IP 188.114.97.5",
+      "recommendation": "Configure reverse DNS records for all IPs",
+      "reference": "RFC 1912",
+      "category": "DNS Configuration"
+    }
+  ]
+}
